@@ -1,19 +1,22 @@
 package com.shorturl.ejb;
 
-import static com.shorturl.datamodel.ShortUrlDetails.*;
+import java.util.List;
 
-import com.shorturl.datamodel.ShortUrlDetails;
-import com.shorturl.ejb.interfaces.ShortUrlBeanLocal;
-import javax.ejb.LocalBean;
+import javax.ejb.Local;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+
+import com.shorturl.datamodel.ShortUrlDetails;
+import com.shorturl.datamodel.ShortUrlDetails.NamedParameters;
+import com.shorturl.datamodel.ShortUrlDetails.NamedQueries;
+import com.shorturl.ejb.interfaces.ShortUrlBeanLocal;
 
 /**
  * Session Bean implementation class ShortUrlBean
  */
 @Stateless
-@LocalBean
+@Local
 public class ShortUrlBean implements ShortUrlBeanLocal {
 
 	@PersistenceContext(unitName = "shortUrl-PU")
@@ -31,8 +34,8 @@ public class ShortUrlBean implements ShortUrlBeanLocal {
 	 * @see com.shorturl.ejb.interfaces.ShortUrlBeanLocal#addLinkDetails()
 	 */
 	@Override
-	public void addOrUpdateShortUrlDetails(final ShortUrlDetails linkDetails) {
-		em.merge(linkDetails);
+	public ShortUrlDetails addOrUpdateShortUrlDetails(final ShortUrlDetails linkDetails) {
+		return em.merge(linkDetails);
 	}
 
 	/*
@@ -43,8 +46,13 @@ public class ShortUrlBean implements ShortUrlBeanLocal {
 	 * lang.String)
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public ShortUrlDetails getShortUrlDetails(String shortUrl) {
-		return em.find(ShortUrlDetails.class, shortUrl);
+		List<ShortUrlDetails> resultList = (List<ShortUrlDetails>) em.createNamedQuery(NamedQueries.FIND_BY_SHORTURL).setParameter(NamedParameters.SHORT_URL, shortUrl).getResultList();
+		if (resultList.size() > 0) {
+			return resultList.get(0);
+		}
+		return null;
 	}
 
 	/*
@@ -65,7 +73,7 @@ public class ShortUrlBean implements ShortUrlBeanLocal {
 	 */
 	@Override
 	public void incrementClickCount(String shortUrl) {
-		em.createNamedQuery(NamedQueries.INCREMENT_CLICK_COUNT)
+		em.createNamedQuery(NamedQueries.INCREMENT_ACTION_COMPLETED_COUNT)
 			.setParameter(NamedParameters.SHORT_URL, shortUrl).executeUpdate();
 	}
 }

@@ -10,13 +10,13 @@ import com.shorturl.datamodel.ShortUrlDetails;
  * @author Pradeep Kumar
  */
 public interface ShortUrlBeanLocal {
-	public static final String JNDI_NAME = "java:global/ShortUrlEar/ShortUrlEjb/ShortUrlBean!com.shorturl.ejb.ShortUrlBean";
+	public static final String JNDI_NAME = "java:global/ShortUrlEar/ShortUrlEjb/ShortUrlBean!com.shorturl.ejb.interfaces.ShortUrlBeanLocal";
 
 	/**
 	 * Create or Update the link details
 	 * @param linkDetails {@link ShortUrlDetails Short URL Details}
 	 */
-	public void addOrUpdateShortUrlDetails(final ShortUrlDetails linkDetails);
+	public ShortUrlDetails addOrUpdateShortUrlDetails(final ShortUrlDetails linkDetails);
 
 	/**
 	 * Get the {@link ShortUrlDetails Short URL Details} for the given Short URL
